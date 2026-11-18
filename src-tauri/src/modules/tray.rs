@@ -662,12 +662,7 @@ pub fn update_tray_menus(app: &tauri::AppHandle) {
                             format!("Antigravity Manager ({})\n{}", email_display, quota_summary);
 
                         // macOS menu bar title (concise for status bar space)
-                        macos_title = match (key_quotas.claude, key_quotas.gemini_pro) {
-                            (Some(c), Some(g)) => Some(format!("C:{}% G:{}%", c, g)),
-                            (Some(c), None) => Some(format!("C:{}%", c)),
-                            (None, Some(g)) => Some(format!("G:{}%", g)),
-                            _ => None,
-                        };
+                        macos_title = key_quotas.gemini_pro.map(|g| format!("G:{}%", g));
                     }
                 } else {
                     menu_lines.push(texts.unknown_quota.clone());
