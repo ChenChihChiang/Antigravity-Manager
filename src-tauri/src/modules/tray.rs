@@ -245,7 +245,10 @@ fn extract_key_model_quotas(models: &[ModelQuota]) -> KeyModelQuotas {
             claude = Some(m.percentage);
         }
         if gemini_pro.is_none()
-            && (name == "gemini-pro-agent"
+            && (name == "gemini-4-hydrogen-high"
+                || name == "gemini-4-hydrogen-medium"
+                || name == "gemini-4-hydrogen"
+                || name == "gemini-pro-agent"
                 || name == "gemini-3.1-pro-high"
                 || name == "gemini-3-pro-high"
                 || name == "gemini-3.1-pro")
@@ -282,7 +285,7 @@ fn extract_key_model_quotas(models: &[ModelQuota]) -> KeyModelQuotas {
             if gemini_flash.is_none() {
                 gemini_flash = Some(m.percentage);
             }
-        } else if is_gemini && name.contains("pro") {
+        } else if is_gemini && (name.contains("pro") || name.contains("hydrogen")) {
             if gemini_pro.is_none() {
                 gemini_pro = Some(m.percentage);
             }
@@ -662,7 +665,11 @@ pub fn update_tray_menus(app: &tauri::AppHandle) {
                             format!("Antigravity Manager ({})\n{}", email_display, quota_summary);
 
                         // macOS menu bar title (concise for status bar space)
-                        macos_title = key_quotas.gemini_pro.map(|g| format!("G:{}%", g));
+                        macos_title = key_quotas
+                            .gemini_pro
+                            .or(key_quotas.gemini_flash)
+                            .or(key_quotas.gemini_image)
+                            .map(|g| format!("G:{}%", g));
                     }
                 } else {
                     menu_lines.push(texts.unknown_quota.clone());
